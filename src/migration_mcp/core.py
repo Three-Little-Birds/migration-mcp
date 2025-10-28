@@ -66,7 +66,7 @@ def _load_geojson(dataset: RouteDataset) -> dict[str, Any]:
         raise RuntimeError(f"Failed to read dataset {dataset.path}") from exc
 
 
-def _resample_geojson(payload: dict[str, Any], stride: int) -> dict[str, Any]:
+def _resample_geojson(payload: dict[str, Any], target: int) -> dict[str, Any]:
     features = payload.get("features")
     if not isinstance(features, list) or not features:
         return payload
@@ -75,11 +75,17 @@ def _resample_geojson(payload: dict[str, Any], stride: int) -> dict[str, Any]:
     coords = geometry.get("coordinates")
     if not isinstance(coords, list):
         return payload
-    if stride <= 1:
+    if target <= 0 or len(coords) <= target:
         return payload
-    resampled = coords[::stride]
+    indices = _select_indices(len(coords), target)
+    resampled = [coords[idx] for idx in indices]
     geometry["coordinates"] = resampled
     feature["geometry"] = geometry
+    properties = feature.get("properties") or {}
+    timestamps = properties.get("timestamps")
+    if isinstance(timestamps, list) and timestamps:
+        properties["timestamps"] = [timestamps[idx] for idx in indices]
+    feature["properties"] = properties
     payload["features"][0] = feature
     return payload
 
@@ -130,6 +136,30 @@ def _generate_surrogate_path(request: RouteRequest) -> tuple[list[list[float]], 
     return coords, timestamps
 
 
+def _select_indices(length: int, target: int) -> list[int]:
+    if length <= 0:
+        raise ValueError("Dataset must contain at least one coordinate")
+    if target <= 0:
+        return [0]
+    if length <= target:
+        return list(range(length))
+    if target == 1:
+        return [0]
+
+    step = (length - 1) / (target - 1)
+    indices = [round(i * step) for i in range(target)]
+    deduped: list[int] = []
+    prev = -1
+    for idx in indices:
+        if idx <= prev:
+            idx = prev + 1
+        if idx >= length:
+            idx = length - 1
+        deduped.append(idx)
+        prev = idx
+    return deduped
+
+
 def generate_routes(request: RouteRequest) -> RouteResponse:
     data_root = _resolve_request_root(request.data_root)
     species_code = request.species_code.lower() if isinstance(request.species_code, str) else None
@@ -149,8 +179,7 @@ def generate_routes(request: RouteRequest) -> RouteResponse:
                 dataset = _first_dataset(species_code, data_root)
         if dataset:
             payload = _load_geojson(dataset)
-            stride = max(len(payload.get("features", [])) // max(request.num_waypoints, 1), 1)
-            payload = _resample_geojson(payload, max(stride, 1))
+            payload = _resample_geojson(payload, request.num_waypoints)
             deckgl = _build_deckgl(payload)
             metadata.update(
                 {
@@ -201,7 +230,7 @@ def refresh_datasets(request: RouteRequest | None, admin_token: str | None) -> A
         refreshed = ensure_birdflow_route(payload.species_code) is not None
         if refreshed:
             clear_caches()
+    clear_caches()
     datasets = _discover_datasets()
     stats = {species: len(entries) for species, entries in datasets.items()}
     return AdminRefreshResponse(refreshed=refreshed, datasets=stats)
-*** End EOF

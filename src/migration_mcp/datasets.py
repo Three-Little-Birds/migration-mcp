@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
@@ -13,6 +14,7 @@ ROUTES_SUBDIR = Path("migration") / "routes"
 BIRDFLOW_SUBDIR = ROUTES_SUBDIR / "birdflow"
 BIRDCAST_TILES_SUBDIR = Path("migration") / "tiles" / "birdcast"
 BIRDCAST_EXTENSIONS = {".tif", ".tiff", ".png", ".geojson"}
+DATA_ROOT_ENV = "BIRD_MIGRATION_DATA_ROOT"
 
 
 @dataclass(frozen=True)
@@ -34,7 +36,12 @@ class BirdCastTile:
 
 
 def resolve_data_root(override: str | None) -> Path:
-    return Path(override).expanduser() if override else DEFAULT_DATA_ROOT
+    if override:
+        return Path(override).expanduser()
+    env_override = os.getenv(DATA_ROOT_ENV)
+    if env_override:
+        return Path(env_override).expanduser()
+    return DEFAULT_DATA_ROOT
 
 
 def routes_dir(root: Path) -> Path:
