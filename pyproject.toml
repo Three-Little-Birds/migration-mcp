@@ -1,0 +1,41 @@
+[project]
+name = "migration-mcp"
+version = "0.1.0"
+description = "Migration route synthesis helpers for MCP services"
+authors = [{ name = "Migration MCP Maintainers" }]
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi>=0.119,<1.0",
+    "pydantic>=2.11",
+    "requests>=2.32",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.2",
+    "ruff>=0.6.7",
+    "httpx>=0.28",
+]
+
+[project.urls]
+Homepage = "https://github.com/yevheniikravchuk/migration-mcp"
+Repository = "https://github.com/yevheniikravchuk/migration-mcp"
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+addopts = "-q"
