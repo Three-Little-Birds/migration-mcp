@@ -20,8 +20,8 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/yevheniikravchuk/migration-mcp"
-Repository = "https://github.com/yevheniikravchuk/migration-mcp"
+Homepage = "https://github.com/Three-Little-Birds/migration-mcp"
+Repository = "https://github.com/Three-Little-Birds/migration-mcp"
 
 [build-system]
 requires = ["setuptools>=68", "wheel"]

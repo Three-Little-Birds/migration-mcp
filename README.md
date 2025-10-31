@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.10+-brightgreen.svg)](pyproject.toml)
-[![CI](https://github.com/yevheniikravchuk/migration-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/yevheniikravchuk/migration-mcp/actions/workflows/ci.yml)
+[![CI](https://github.com/Three-Little-Birds/migration-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/Three-Little-Birds/migration-mcp/actions/workflows/ci.yml)
 
 `migration-mcp` turns migration datasets into a friendly playground for analysts, educators, and MCP agents. It can synthesise surrogate routes when no data exists, load cached BirdFlow/BirdCast tracks when available, and expose everything through FastAPI or python-sdk tools.
 
@@ -34,7 +34,7 @@ Set up BirdCast tiles similarly, or let the `/admin/refresh` endpoint fetch plac
 ## Step 1 – Install the package
 
 ```bash
-uv pip install "git+https://github.com/yevheniikravchuk/migration-mcp.git"
+uv pip install "git+https://github.com/Three-Little-Birds/migration-mcp.git"
 ```
 
 ## Step 2 – Generate a route in Python
