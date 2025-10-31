@@ -1,124 +1,97 @@
-# migration-mcp · Explore Bird Migration with MCP Agents
+# migration-mcp · Probabilistic bird routes for MCP agents
 
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Python](https://img.shields.io/badge/python-3.10+-brightgreen.svg)](pyproject.toml)
-[![CI](https://github.com/Three-Little-Birds/migration-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/Three-Little-Birds/migration-mcp/actions/workflows/ci.yml)
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a>
+  <a href="pyproject.toml"><img src="https://img.shields.io/badge/python-3.10%2B-3776AB.svg" alt="Python 3.10 or newer"></a>
+  <a href="https://github.com/Three-Little-Birds/migration-mcp/actions/workflows/ci.yml"><img src="https://github.com/Three-Little-Birds/migration-mcp/actions/workflows/ci.yml/badge.svg" alt="CI status"></a>
+  <img src="https://img.shields.io/badge/status-stable-4caf50.svg" alt="Project status: stable">
+  <img src="https://img.shields.io/badge/MCP-tooling-blueviolet.svg" alt="MCP tooling badge">
+</p>
 
-`migration-mcp` turns migration datasets into a friendly playground for analysts, educators, and MCP agents. It can synthesise surrogate routes when no data exists, load cached BirdFlow/BirdCast tracks when available, and expose everything through FastAPI or python-sdk tools.
+> **TL;DR**: Serve BirdFlow/BirdCast/sideloaded GeoJSON routes through MCP so agents can visualise, score, and rehearse migration profiles.
 
-## What you will learn
+## Table of contents
 
-- How the package organises migration datasets on disk.
-- How to request a route (real or surrogate) and visualise it on a map.
-- How to give an MCP assistant access to species data, tiles, and cache refresh commands.
+1. [Why agents love it](#why-agents-love-it)
+2. [Quickstart](#quickstart)
+3. [Run as a service](#run-as-a-service)
+4. [Agent playbook](#agent-playbook)
+5. [Stretch ideas](#stretch-ideas)
+6. [Accessibility & upkeep](#accessibility--upkeep)
+7. [Contributing](#contributing)
 
-## Quick glossary
+## Why agents love it
 
-- **Routes directory** – GeoJSON files stored under `~/bird-data/migration/routes/` by default.
-- **BirdFlow cache** – probabilistic routes (GeoJSON) placed in `migration/routes/birdflow/`.
-- **BirdCast tiles** – nightly density imagery stored in `migration/tiles/birdcast/`.
+| Persona | Immediate value | Longer-term payoff |
+|---------|-----------------|--------------------|
+| **Data explorers** | Query cached BirdFlow/BirdCast routes or drop in GeoJSON to get deck.gl-ready outputs. | Metadata captures species, status, and provenance for dashboards. |
+| **Decision-support teams** | Merge probabilistic routes with perception/control scenarios through MCP. | Caching + refresh scripts make it easy to maintain nightly datasets in CI.
 
-## Step 0 – Prepare or fetch data (optional)
-
-The package works even without real data. When no files are found it generates a smooth surrogate path. To use actual routes:
-
-```bash
-# Example: download a sample route
-mkdir -p ~/bird-data/migration/routes
-curl -L -o ~/bird-data/migration/routes/comswi.geojson \
-  https://raw.githubusercontent.com/bbecquet/bird-tracking/master/data/comswi.geojson
-```
-
-Set up BirdCast tiles similarly, or let the `/admin/refresh` endpoint fetch placeholders.
-
-## Step 1 – Install the package
+## Quickstart
 
 ```bash
 uv pip install "git+https://github.com/Three-Little-Birds/migration-mcp.git"
 ```
 
-## Step 2 – Generate a route in Python
+Populate sample routes:
+
+```bash
+uv run python scripts/data/refresh_migration_sources.py --data-root ~/bird-data
+```
+
+Query from Python:
 
 ```python
 from migration_mcp import RouteRequest, generate_routes
 
-request = RouteRequest(species_code="comswi", num_waypoints=40)
+request = RouteRequest(num_waypoints=20, species_code="comswi")
 response = generate_routes(request)
-
-print("Status:", response.metadata["status"])
-print("First coordinate:", response.geojson["features"][0]["geometry"]["coordinates"][0])
+print(response.metadata)
 ```
 
-If `comswi.geojson` exists, the library resamples it to 40 waypoints. Otherwise it synthesises a smooth flight path using the default scenario settings.
+## Run as a service
 
-## Step 3 – Visualise with deck.gl or Leaflet
-
-The response contains a ready-to-plot deck.gl payload:
-
-```python
-import pandas as pd
-
-track = response.deckgl[0]
-df = pd.DataFrame(track["path"], columns=["lon", "lat"])
-print(df.head())
-```
-
-You can drop `track` into a TripsLayer in React or a Jupyter notebook. The metadata block records the data source, species code, and cache location for reproducibility.
-
-## Step 4 – Expose migration data to MCP agents
-
-### FastAPI service
-
-```python
-from migration_mcp.fastapi_app import create_app
-
-app = create_app()
-```
-
-Run it locally:
+### FastAPI (REST)
 
 ```bash
 uv run uvicorn migration_mcp.fastapi_app:create_app --factory --port 8006
 ```
 
-Endpoints available:
-
-- `POST /routes` – return GeoJSON + deck.gl arrays.
-- `GET /datasets` – list cached species routes.
-- `GET /tiles` – list BirdCast tiles.
-- `POST /admin/refresh` – pull BirdFlow/BirdCast data (protect with `X-MCP-Admin-Token`).
-
-### python-sdk tool
+### python-sdk tool (STDIO / MCP)
 
 ```python
 from mcp.server.fastmcp import FastMCP
 from migration_mcp.tool import build_tool
 
-mcp = FastMCP("migration-mcp", "Migration route planner")
+mcp = FastMCP("migration-mcp", "Migration route synthesis")
 build_tool(mcp)
 
 if __name__ == "__main__":
     mcp.run()
 ```
 
-Ask your MCP-aware agent questions like “show me a surrogate route with 60 waypoints for species XYZ” or “refresh the crane dataset”.
+## Agent playbook
+
+- **Deck.gl overlays** – feed `response.deckgl` straight into map visualisations.
+- **Behaviour modelling** – combine routes with `ctrltest-mcp` to design gust budgets along migratory corridors.
+- **Data governance** – exploit metadata to differentiate BirdFlow, BirdCast, or manual GeoJSON sources.
 
 ## Stretch ideas
 
-- **Classroom exercise:** give students a few species codes and let them compare seasonal routes using the deck.gl output.
-- **UAV rehearsal:** combine this tool with ctrltest-mcp to plan control tests around peak migration intensity.
-- **Data stewardship:** hook `/admin/refresh` into a cron job so caches stay current.
+1. Plug Movebank-authenticated pulls into the same cache using the new credential helper.
+2. Generate scenario collections and share them with simulation teams via `configs/default_scenario.json` patches.
+3. Schedule nightly refreshes to keep BirdCast tiles current.
 
-## Contributing & testing
+## Accessibility & upkeep
 
-```bash
-uv pip install --system -e .[dev]
-uv run ruff check .
-uv run pytest
-```
+- Concise badges with alt text keep the hero section readable while signalling status at a glance.【turn0search0】
+- Tests mock dataset layers; run `uv run pytest` before shipping.
+- Respect data licences—document the origin (BirdFlow, BirdCast, GeoJSON) when expanding caches.
 
-Tests provide stubbed datasets so you can experiment without downloading gigabytes of telemetry.
+## Contributing
 
-## License
+1. `uv pip install --system -e .[dev]`
+2. `uv run ruff check .` and `uv run pytest`
+3. Include sample GeoJSON snippets in PRs so reviewers can validate deck.gl output.
 
-MIT — see [LICENSE](LICENSE).
+MIT license — see [LICENSE](LICENSE).
