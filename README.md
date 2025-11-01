@@ -1,4 +1,4 @@
-# migration-mcp · Probabilistic bird routes for MCP agents
+# migration-mcp - Probabilistic bird routes for MCP agents
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a>
@@ -72,9 +72,9 @@ if __name__ == "__main__":
 
 ## Agent playbook
 
-- **Deck.gl overlays** – feed `response.deckgl` straight into map visualisations.
-- **Behaviour modelling** – combine routes with `ctrltest-mcp` to design gust budgets along migratory corridors.
-- **Data governance** – exploit metadata to differentiate BirdFlow, BirdCast, or manual GeoJSON sources.
+- **Deck.gl overlays** - feed `response.deckgl` straight into map visualisations.
+- **Behaviour modelling** - combine routes with `ctrltest-mcp` to design gust budgets along migratory corridors.
+- **Data governance** - exploit metadata to differentiate BirdFlow, BirdCast, or manual GeoJSON sources.
 
 ## Stretch ideas
 
@@ -84,9 +84,9 @@ if __name__ == "__main__":
 
 ## Accessibility & upkeep
 
-- Concise badges with alt text keep the hero section readable while signalling status at a glance.【turn0search0】
+- Concise badges with alt text keep the hero section readable while signalling status at a glance.[turn0search0]
 - Tests mock dataset layers; run `uv run pytest` before shipping.
-- Respect data licences—document the origin (BirdFlow, BirdCast, GeoJSON) when expanding caches.
+- Respect data licences-document the origin (BirdFlow, BirdCast, GeoJSON) when expanding caches.
 
 ## Contributing
 
@@ -94,4 +94,4 @@ if __name__ == "__main__":
 2. `uv run ruff check .` and `uv run pytest`
 3. Include sample GeoJSON snippets in PRs so reviewers can validate deck.gl output.
 
-MIT license — see [LICENSE](LICENSE).
+MIT license - see [LICENSE](LICENSE).
