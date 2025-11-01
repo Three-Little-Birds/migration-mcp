@@ -51,6 +51,15 @@ print(response.metadata)
 
 ## Run as a service
 
+### CLI (STDIO transport)
+
+```bash
+uvx migration-mcp  # runs the MCP over stdio
+# or python -m migration_mcp
+```
+
+Use `python -m migration_mcp --describe` to inspect metadata without launching the server.
+
 ### FastAPI (REST)
 
 ```bash
