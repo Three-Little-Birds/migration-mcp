@@ -84,7 +84,7 @@ if __name__ == "__main__":
 
 ## Accessibility & upkeep
 
-- Concise badges with alt text keep the hero section readable while signalling status at a glance.[turn0search0]
+- Concise badges with alt text keep the hero section readable while signalling status at a glance.
 - Tests mock dataset layers; run `uv run pytest` before shipping.
 - Respect data licences-document the origin (BirdFlow, BirdCast, GeoJSON) when expanding caches.
 
