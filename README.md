@@ -11,7 +11,7 @@
 
 ## Table of contents
 
-1. [Why agents love it](#why-agents-love-it)
+1. [What it provides](#what-it-provides)
 2. [Quickstart](#quickstart)
 3. [Run as a service](#run-as-a-service)
 4. [Agent playbook](#agent-playbook)
@@ -19,12 +19,13 @@
 6. [Accessibility & upkeep](#accessibility--upkeep)
 7. [Contributing](#contributing)
 
-## Why agents love it
+## What it provides
 
-| Persona | Immediate value | Longer-term payoff |
-|---------|-----------------|--------------------|
-| **Data explorers** | Query cached BirdFlow/BirdCast routes or drop in GeoJSON to get deck.gl-ready outputs. | Metadata captures species, status, and provenance for dashboards. |
-| **Decision-support teams** | Merge probabilistic routes with perception/control scenarios through MCP. | Caching + refresh scripts make it easy to maintain nightly datasets in CI.
+| Scenario | Value |
+|----------|-------|
+| BirdFlow routes | Surface origin→destination probabilities from [BirdFlow](https://birdflow-science.github.io/) exports without running R. |
+| BirdCast densities | Cache nightly [BirdCast](https://dashboard.birdcast.info/) tiles and list them through MCP for map overlays. |
+| Movebank telemetry | Authenticate against [Movebank](https://www.movebank.org/) (when credentials are supplied) and convert event data into simplified GeoJSON tracks. |
 
 ## Quickstart
 
