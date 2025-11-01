@@ -49,6 +49,14 @@ response = generate_routes(request)
 print(response.metadata)
 ```
 
+### ToolHive smoke test
+
+Ensure `~/bird-data/migration/routes/` (or `MIGRATION_DATA_ROOT`) contains GeoJSON tracks, then run:
+
+```bash
+uvx --with 'mcp==1.20.0' python scripts/integration/run_migration.py
+```
+
 ## Run as a service
 
 ### CLI (STDIO transport)
