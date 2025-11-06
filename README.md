@@ -16,7 +16,7 @@
 3. [Run as a service](#run-as-a-service)
 4. [Agent playbook](#agent-playbook)
 5. [Stretch ideas](#stretch-ideas)
-6. [Accessibility & upkeep](#accessibility--upkeep)
+6. [Install & maintenance](#install--maintenance)
 7. [Contributing](#contributing)
 
 ## What it provides
@@ -99,10 +99,11 @@ if __name__ == "__main__":
 2. Generate scenario collections and share them with simulation teams via `configs/default_scenario.json` patches.
 3. Schedule nightly refreshes to keep BirdCast tiles current.
 
-## Accessibility & upkeep
+## Install & maintenance
 
-- Refresh cached data with `scripts/data/refresh_migration_sources.py` and note the provenance (BirdFlow, BirdCast, Movebank) in PRs.
-- Respect data licences—document the origin (BirdFlow, BirdCast, GeoJSON) when expanding caches.
+- **Runtime install:** follow the [Quickstart](#quickstart) `uv pip install "git+https://github.com/Three-Little-Birds/migration-mcp.git"` step on any host that should serve migration data.
+- **Data root care:** keep `~/bird-data/migration/` (or `BIRD_MIGRATION_DATA_ROOT`) populated via `scripts/data/refresh_migration_sources.py`, and note the provenance (BirdFlow, BirdCast, Movebank) in PRs.
+- **Licensing discipline:** cite data sources and their licences whenever you contribute new GeoJSON tiles or routes.
 
 ## Contributing
 
