@@ -101,9 +101,8 @@ if __name__ == "__main__":
 
 ## Accessibility & upkeep
 
-- Concise badges with alt text keep the hero section readable while signalling status at a glance.
-- Tests mock dataset layers; run `uv run pytest` before shipping.
-- Respect data licences-document the origin (BirdFlow, BirdCast, GeoJSON) when expanding caches.
+- Refresh cached data with `scripts/data/refresh_migration_sources.py` and note the provenance (BirdFlow, BirdCast, Movebank) in PRs.
+- Respect data licences—document the origin (BirdFlow, BirdCast, GeoJSON) when expanding caches.
 
 ## Contributing
 
