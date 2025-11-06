@@ -36,13 +36,16 @@ uv pip install "git+https://github.com/Three-Little-Birds/migration-mcp.git"
 Populate sample routes:
 
 ```bash
-uv run python scripts/data/refresh_migration_sources.py --data-root ~/bird-data
+PYTHONPATH=. uv run python scripts/data/refresh_migration_sources.py
 ```
+
+> BirdCast removed the unauthenticated JSON endpoint (`/api/v1/migration/summary/<date>` now responds with HTML 404). Until the partnership API is restored, expect the helper above to log `Failed to refresh BirdCast tile` and stage tiles manually under `~/bird-data/migration/routes/birdcast/` if you have access to the official feeds.
 
 To enable Movebank pulls, store credentials locally (they are not committed):
 
 ```bash
 uv run python scripts/setup_movebank_credentials.py --login your_movebank_user --password '...' --force
+source ~/.config/three-little-birds/movebank.env  # exports MOVEBANK_LOGIN/MOVEBANK_PASSWORD
 ```
 
 Fetch a licensed dataset once you have accepted the terms on movebank.org:
@@ -61,7 +64,7 @@ from migration_mcp import RouteRequest, generate_routes
 
 request = RouteRequest(num_waypoints=20, species_code="comswi")
 response = generate_routes(request)
-print(response.metadata["source"])  # "birdflow" | "birdcast" | "movebank" | "custom"
+print(response.metadata["dataset_source"])  # "birdflow" | "birdcast" | "movebank" | "custom"
 print(response.geojson["features"][0]["properties"].keys())
 ```
 
@@ -71,10 +74,9 @@ Example GeoJSON feature:
 {
   "type": "Feature",
   "properties": {
-    "species_code": "comswi",
-    "probability": 0.18,
-    "source": "birdflow",
-    "season": "spring"
+    "species": "Grus grus",
+    "timestamps": ["2010-09-10T17:00:00Z", "2010-09-28T17:00:00Z", ...],
+    "source": "birdflow"
   },
   "geometry": {
     "type": "LineString",
@@ -92,7 +94,7 @@ Example GeoJSON feature:
 Ensure `~/bird-data/migration/routes/` (or `MIGRATION_DATA_ROOT`) contains GeoJSON tracks, then run:
 
 ```bash
-uvx --with 'mcp==1.20.0' python scripts/integration/run_migration.py
+PYTHONPATH=. uvx --with 'mcp==1.20.0' python scripts/integration/run_migration.py
 ```
 
 ## Run as a service
