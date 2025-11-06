@@ -39,6 +39,12 @@ Populate sample routes:
 uv run python scripts/data/refresh_migration_sources.py --data-root ~/bird-data
 ```
 
+To enable Movebank pulls, store credentials locally (they are not committed):
+
+```bash
+uv run python scripts/setup_movebank_credentials.py --login your_movebank_user --password '...' --force
+```
+
 Query from Python:
 
 ```python
@@ -46,7 +52,25 @@ from migration_mcp import RouteRequest, generate_routes
 
 request = RouteRequest(num_waypoints=20, species_code="comswi")
 response = generate_routes(request)
-print(response.metadata)
+print(response.metadata["source"])  # "birdflow" | "birdcast" | "movebank" | "custom"
+print(response.geojson["features"][0]["properties"].keys())
+```
+
+Example GeoJSON feature:
+
+```json
+{
+  "type": "Feature",
+  "properties": {
+    "species_code": "comswi",
+    "probability": 0.18,
+    "source": "birdflow"
+  },
+  "geometry": {
+    "type": "LineString",
+    "coordinates": [[-73.98, 40.75, 150.0], ...]
+  }
+}
 ```
 
 ### ToolHive smoke test
@@ -103,7 +127,7 @@ if __name__ == "__main__":
 
 - **Runtime install:** follow the [Quickstart](#quickstart) `uv pip install "git+https://github.com/Three-Little-Birds/migration-mcp.git"` step on any host that should serve migration data.
 - **Data root care:** keep `~/bird-data/migration/` (or `BIRD_MIGRATION_DATA_ROOT`) populated via `scripts/data/refresh_migration_sources.py`, and note the provenance (BirdFlow, BirdCast, Movebank) in PRs.
-- **Licensing discipline:** cite data sources and their licences whenever you contribute new GeoJSON tiles or routes.
+- **Licensing & access:** BirdCast data is public but licensed; Movebank tracks usually require account approval. Configure credentials via `scripts/setup_movebank_credentials.py` and only cache datasets you have permission to use.
 
 ## Contributing
 
