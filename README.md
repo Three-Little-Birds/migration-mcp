@@ -45,6 +45,15 @@ To enable Movebank pulls, store credentials locally (they are not committed):
 uv run python scripts/setup_movebank_credentials.py --login your_movebank_user --password '...' --force
 ```
 
+Fetch a licensed dataset once you have accepted the terms on movebank.org:
+
+```bash
+uv run python scripts/data/fetch_movebank_study.py \
+  --study-id 123456789 \
+  --login-file ~/.config/three-little-birds/movebank.env \
+  --output ~/bird-data/migration/routes/stork.geojson
+```
+
 Query from Python:
 
 ```python
@@ -64,11 +73,16 @@ Example GeoJSON feature:
   "properties": {
     "species_code": "comswi",
     "probability": 0.18,
-    "source": "birdflow"
+    "source": "birdflow",
+    "season": "spring"
   },
   "geometry": {
     "type": "LineString",
-    "coordinates": [[-73.98, 40.75, 150.0], ...]
+    "coordinates": [
+      [-73.98, 40.75, 150.0],
+      [-73.12, 41.30, 120.0],
+      [-72.45, 42.05, 80.0]
+    ]
   }
 }
 ```
@@ -127,7 +141,7 @@ if __name__ == "__main__":
 
 - **Runtime install:** follow the [Quickstart](#quickstart) `uv pip install "git+https://github.com/Three-Little-Birds/migration-mcp.git"` step on any host that should serve migration data.
 - **Data root care:** keep `~/bird-data/migration/` (or `BIRD_MIGRATION_DATA_ROOT`) populated via `scripts/data/refresh_migration_sources.py`, and note the provenance (BirdFlow, BirdCast, Movebank) in PRs.
-- **Licensing & access:** BirdCast data is public but licensed; Movebank tracks usually require account approval. Configure credentials via `scripts/setup_movebank_credentials.py` and only cache datasets you have permission to use.
+- **Licensing & access:** BirdFlow routes follow the upstream MIT licence; BirdCast tiles are © Cornell Lab of Ornithology (cite [BirdCast](https://birdcast.info) in derivative works), and Movebank data typically requires explicit approval per study. Configure credentials via `scripts/setup_movebank_credentials.py`, review licences, and only cache datasets you have permission to use.
 
 ## Contributing
 
